@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D Эффекты на CSS</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #0ff;
+            --secondary: #f0f;
+            --accent: #ff0;
+            --dark: #121212;
+            --darker: #0a0a0a;
+            --card-bg: rgba(30, 30, 40, 0.7);
+            --text: #f0f0f0;
+            --text-secondary: #aaa;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: var(--dark);
+            color: var(--text);
+            line-height: 1.6;
+            overflow-x: hidden;
+            background: linear-gradient(135deg, var(--darker) 0%, var(--dark) 100%);
+            min-height: 100vh;
+        }
+
+        header {
+            text-align: center;
+            padding: 4rem 1rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        h1 {
+            font-size: 3.5rem;
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            color: #fff;
+            text-shadow: 0 0 10px rgba(0, 255, 255, 0.7),
+                         0 0 20px rgba(0, 255, 255, 0.5),
+                         0 0 30px rgba(0, 255, 255, 0.3);
+            transform: perspective(500px) rotateX(30deg);
+            transition: transform 0.5s;
+        }
+
+        h1:hover {
+            transform: perspective(500px) rotateX(0deg);
+            text-shadow: 0 0 20px rgba(0, 255, 255, 0.9),
+                         0 0 30px rgba(0, 255, 255, 0.7),
+                         0 0 40px rgba(0, 255, 255, 0.5);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .intro {
+            text-align: center;
+            margin-bottom: 3rem;
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+        }
+
+        .effects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .effect-card {
+            background: var(--card-bg);
+            border-radius: 15px;
+            padding: 2rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            transition: transform 0.3s, box-shadow 0.3s;
+            transform-style: preserve-3d;
+            perspective: 1000px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(0, 255, 255, 0.1);
+        }
+
+        .effect-card:hover {
+            transform: translateY(-10px) rotateX(5deg);
+            box-shadow: 0 15px 35px rgba(0, 255, 255, 0.2);
+        }
+
+        .effect-title {
+            font-size: 1.8rem;
+            margin-bottom: 1rem;
+            color: var(--primary);
+            text-align: center;
+            transform: translateZ(30px);
+        }
+
+        .effect-demo {
+            height: 200px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 1.5rem 0;
+            transform-style: preserve-3d;
+        }
+
+        .effect-description {
+            color: var(--text-secondary);
+            margin-bottom: 1.5rem;
+            transform: translateZ(20px);
+        }
+
+        .effect-code {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 1rem;
+            border-radius: 5px;
+            font-family: monospace;
+            overflow-x: auto;
+            color: #0f0;
+            transform: translateZ(10px);
+        }
+
+        /* 3D Cube */
+        .cube-container {
+            width: 100px;
+            height: 100px;
+            perspective: 800px;
+            margin: 0 auto;
+        }
+
+        .cube {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            animation: cube-rotate 10s infinite linear;
+        }
+
+        .cube-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            opacity: 0.9;
+            border: 2px solid rgba(0, 255, 255, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+            color: #000;
+            background: rgba(0, 255, 255, 0.7);
+        }
+
+        .front { transform: translateZ(50px); background: rgba(0, 255, 255, 0.7); }
+        .back { transform: rotateY(180deg) translateZ(50px); background: rgba(255, 0, 255, 0.7); }
+        .right { transform: rotateY(90deg) translateZ(50px); background: rgba(255, 255, 0, 0.7); }
+        .left { transform: rotateY(-90deg) translateZ(50px); background: rgba(255, 0, 0, 0.7); }
+        .top { transform: rotateX(90deg) translateZ(50px); background: rgba(0, 255, 0, 0.7); }
+        .bottom { transform: rotateX(-90deg) translateZ(50px); background: rgba(0, 0, 255, 0.7); }
+
+        @keyframes cube-rotate {
+            0% { transform: rotateX(0) rotateY(0) rotateZ(0); }
+            100% { transform: rotateX(360deg) rotateY(360deg) rotateZ(360deg); }
+        }
+
+        /* 3D Card Flip */
+        .card-container {
+            width: 150px;
+            height: 200px;
+            perspective: 1000px;
+            margin: 0 auto;
+        }
+
+        .card {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.8s;
+            cursor: pointer;
+        }
+
+        .card-container:hover .card {
+            transform: rotateY(180deg);
+        }
+
+        .card-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+            color: white;
+        }
+
+        .card-front {
+            background: linear-gradient(45deg, #ff00cc, #3333ff);
+        }
+
+        .card-back {
+            background: linear-gradient(45deg, #3333ff, #ff00cc);
+            transform: rotateY(180deg);
+        }
+
+        /* 3D Text */
+        .text-3d {
+            font-size: 3rem;
+            font-weight: bold;
+            color: var(--primary);
+            text-shadow: 
+                3px 3px 0 var(--secondary),
+                -3px -3px 0 var(--accent);
+            transition: all 0.5s;
+            transform: skew(-5deg, -5deg) rotateX(20deg) rotateY(-10deg);
+            animation: text-glitch 3s infinite alternate;
+        }
+
+        @keyframes text-glitch {
+            0%, 100% { transform: skew(-5deg, -5deg) rotateX(20deg) rotateY(-10deg); }
+            50% { transform: skew(5deg, 5deg) rotateX(-20deg) rotateY(10deg); text-shadow: 3px 3px 0 var(--accent), -3px -3px 0 var(--secondary); }
+        }
+
+        /* 3D Button */
+        .btn-3d {
+            display: inline-block;
+            padding: 15px 30px;
+            background: linear-gradient(145deg, #ff00cc, #3333ff);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            cursor: pointer;
+            transform-style: preserve-3d;
+            perspective: 500px;
+            transition: all 0.3s;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3),
+                        inset 0 -5px 10px rgba(0, 0, 0, 0.2);
+            position: relative;
+        }
+
+        .btn-3d::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateZ(-5px);
+            border-radius: 8px;
+            filter: blur(5px);
+        }
+
+        .btn-3d:hover {
+            transform: translateY(-5px) rotateX(10deg);
+            box-shadow: 0 15px 25px rgba(0, 0, 0, 0.4),
+                        inset 0 -8px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn-3d:active {
+            transform: translateY(2px) rotateX(5deg);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3),
+                        inset 0 -3px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Parallax Scrolling */
+        .parallax-container {
+            height: 200px;
+            perspective: 1px;
+            overflow-x: hidden;
+            overflow-y: auto;
+            margin: 1rem 0;
+        }
+
+        .parallax-layer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+        }
+
+        .parallax-back {
+            transform: translateZ(-1px) scale(2);
+        }
+
+        .parallax-base {
+            transform: translateZ(0);
+        }
+
+        /* 3D Gallery */
+        .gallery-3d {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            perspective: 1000px;
+            transform-style: preserve-3d;
+        }
+
+        .gallery-item {
+            width: 80px;
+            height: 120px;
+            border-radius: 8px;
+            transition: transform 0.5s;
+            transform-style: preserve-3d;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5);
+            cursor: pointer;
+        }
+
+        .gallery-item:nth-child(1) { background: linear-gradient(45deg, #ff00cc, #3333ff); }
+        .gallery-item:nth-child(2) { background: linear-gradient(45deg, #33ff00, #ffcc00); }
+        .gallery-item:nth-child(3) { background: linear-gradient(45deg, #00ccff, #ff0066); }
+        .gallery-item:nth-child(4) { background: linear-gradient(45deg, #cc00ff, #00ff99); }
+
+        .gallery-item:hover {
+            transform: translateZ(30px) rotateY(10deg);
+            z-index: 10;
+        }
+
+        .gallery-3d:hover .gallery-item:not(:hover) {
+            transform: scale(0.95) translateZ(-20px);
+            opacity: 0.7;
+        }
+
+        /* 3D Loader */
+        .loader-3d {
+            width: 60px;
+            height: 60px;
+            transform-style: preserve-3d;
+            animation: loader-rotate 3s infinite linear;
+            margin: 0 auto;
+        }
+
+        .loader-circle {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border: 5px solid transparent;
+            border-radius: 50%;
+            border-top-color: var(--primary);
+            animation: loader-inner 1.5s infinite ease;
+        }
+
+        .loader-circle:nth-child(1) { animation-delay: -0.5s; }
+        .loader-circle:nth-child(2) { animation-delay: -1s; }
+        .loader-circle:nth-child(3) { animation-delay: -1.5s; }
+
+        @keyframes loader-rotate {
+            0% { transform: rotateY(0deg) rotateX(0deg); }
+            100% { transform: rotateY(360deg) rotateX(360deg); }
+        }
+
+        @keyframes loader-inner {
+            0% { transform: rotateZ(0deg); }
+            100% { transform: rotateZ(360deg); }
+        }
+
+        /* 3D Menu */
+        .menu-3d {
+            display: flex;
+            gap: 1rem;
+            perspective: 1000px;
+        }
+
+        .menu-item {
+            padding: 12px 24px;
+            background: rgba(0, 0, 0, 0.3);
+            color: var(--text);
+            border: 1px solid var(--primary);
+            border-radius: 5px;
+            cursor: pointer;
+            transition: transform 0.3s, background 0.3s;
+            transform-style: preserve-3d;
+            transform: translateZ(0);
+        }
+
+        .menu-item:hover {
+            background: rgba(0, 255, 255, 0.2);
+            transform: translateZ(20px) rotateX(10deg);
+            box-shadow: 0 10px 20px rgba(0, 255, 255, 0.2);
+        }
+
+        footer {
+            text-align: center;
+            padding: 3rem 1rem;
+            margin-top: 3rem;
+            color: #666;
+            border-top: 1px solid rgba(0, 255, 255, 0.1);
+        }
+
+        /* Media Queries */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2.5rem;
+            }
+            
+            .effects-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .text-3d {
+                font-size: 2rem;
+            }
+            
+            .gallery-3d {
+                flex-wrap: wrap;
+            }
+            
+            .menu-3d {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>3D Эффекты на CSS</h1>
+        <p>Изучите возможности 3D преобразований с помощью чистого CSS</p>
+    </header>
+
+    <div class="container">
+        <div class="intro">
+            <p>На этой странице представлены различные 3D эффекты, созданные исключительно с помощью HTML и CSS. Все эффекты полностью функциональны и не требуют JavaScript.</p>
+        </div>
+
+        <div class="effects-grid">
+            <div class="effect-card">
+                <h2 class="effect-title">3D Куб</h2>
+                <div class="effect-demo">
+                    <div class="cube-container">
+                        <div class="cube">
+                            <div class="cube-face front">Front</div>
+                            <div class="cube-face back">Back</div>
+                            <div class="cube-face right">Right</div>
+                            <div class="cube-face left">Left</div>
+                            <div class="cube-face top">Top</div>
+                            <div class="cube-face bottom">Bottom</div>
+                        </div>
+                    </div>
+                </div>
+                <p class="effect-description">Вращающийся 3D куб, созданный с помощью CSS трансформаций и анимации.</p>
+                <div class="effect-code">
+                    .cube {<br>
+                    &nbsp;&nbsp;transform-style: preserve-3d;<br>
+                    &nbsp;&nbsp;animation: rotate 10s infinite linear;<br>
+                    }
+                </div>
+            </div>
+
+            <div class="effect-card">
+                <h2 class="effect-title">3D Переворот Карточки</h2>
+                <div class="effect-demo">
+                    <div class="card-container">
+                        <div class="card">
+                            <div class="card-face card-front">Front</div>
+                            <div class="card-face card-back">Back</div>
+                        </div>
+                    </div>
+                </div>
+                <p class="effect-description">Карточка с 3D эффектом переворота при наведении курсора.</p>
+                <div class="effect-code">
+                    .card {<br>
+                    &nbsp;&nbsp;transition: transform 0.8s;<br>
+                    &nbsp;&nbsp;transform-style: preserve-3d;<br>
+                    }<br>
+                    .card-container:hover .card {<br>
+                    &nbsp;&nbsp;transform: rotateY(180deg);<br>
+                    }
+                </div>
+            </div>
+
+            <div class="effect-card">
+                <h2 class="effect-title">3D Текст</h2>
+                <div class="effect-demo">
+                    <div class="text-3d">3D TEXT</div>
+                </div>
+                <p class="effect-description">Текст с 3D эффектом, созданным с помощью теней и трансформаций.</p>
+                <div class="effect-code">
+                    .text-3d {<br>
+                    &nbsp;&nbsp;text-shadow: 3px 3px 0 #f0f, -3px -3px 0 #0f0;<br>
+                    &nbsp;&nbsp;transform: skew(-5deg, -5deg) rotateX(20deg);<br>
+                    }
+                </div>
+            </div>
+
+            <div class="effect-card">
+                <h2 class="effect-title">3D Кнопка</h2>
+                <div class="effect-demo">
+                    <button class="btn-3d">Нажми меня</button>
+                </div>
+                <p class="effect-description">Кнопка с реалистичным 3D эффектом нажатия.</p>
+                <div class="effect-code">
+                    .btn-3d {<br>
+                    &nbsp;&nbsp;transform-style: preserve-3d;<br>
+                    &nbsp;&nbsp;perspective: 500px;<br>
+                    &nbsp;&nbsp;transition: all 0.3s;<br>
+                    }<br>
+                    .btn-3d:hover {<br>
+                    &nbsp;&nbsp;transform: translateY(-5px) rotateX(10deg);<br>
+                    }
+                </div>
+            </div>
+
+            <div class="effect-card">
+                <h2 class="effect-title">Параллакс Эффект</h2>
+                <div class="effect-demo" style="height: 250px; position: relative;">
+                    <div class="parallax-container">
+                        <div class="parallax-layer parallax-back" style="background: linear-gradient(45deg, #ff00cc, #3333ff); opacity: 0.6;"></div>
+                        <div class="parallax-layer parallax-base" style="display: flex; justify-content: center; align-items: center;">
+                            <p style="color: white; font-weight: bold;">Прокрутите для эффекта</p>
+                        </div>
+                    </div>
+                </div>
+                <p class="effect-description">Эффект параллакса создает иллюзию глубины при прокрутке.</p>
+                <div class="effect-code">
+                    .parallax-back {<br>
+                    &nbsp;&nbsp;transform: translateZ(-1px) scale(2);<br>
+                    }<br>
+                    .parallax-base {<br>
+                    &nbsp;&nbsp;transform: translateZ(0);<br>
+                    }
+                </div>
+            </div>
+
+            <div class="effect-card">
+                <h2 class="effect-title">3D Трансформации</h2>
+                <div class="effect-demo">
+                    <div style="width: 100px; height: 100px; background: linear-gradient(45deg, #ff00cc, #3333ff); transform: rotateX(30deg) rotateY(30deg); transition: transform 0.5s; display: flex; justify-content: center; align-items: center; color: white;" onmouseover="this.style.transform='rotateX(0deg) rotateY(0deg)'" onmouseout="this.style.transform='rotateX(30deg) rotateY(30deg)'">
+                        Hover
+                    </div>
+                </div>
+                <p class="effect-description">Элемент с 3D трансформацией, который меняется при наведении.</p>
+                <div class="effect-code">
+                    .element {<br>
+                    &nbsp;&nbsp;transform: rotateX(30deg) rotateY(30deg);<br>
+                    &nbsp;&nbsp;transition: transform 0.5s;<br>
+                    }<br>
+                    .element:hover {<br>
+                    &nbsp;&nbsp;transform: rotateX(0deg) rotateY(0deg);<br>
+                    }
+                </div>
+            </div>
+
+            <div class="effect-card">
+                <h2 class="effect-title">3D Галерея</h2>
+                <div class="effect-demo">
+                    <div class="gallery-3d">
+                        <div class="gallery-item"></div>
+                        <div class="gallery-item"></div>
+                        <div class="gallery-item"></div>
+                        <div class="gallery-item"></div>
+                    </div>
+                </div>
+                <p class="effect-description">Интерактивная 3D галерея, где элементы реагируют на наведение.</p>
+                <div class="effect-code">
+                    .gallery-item:hover {<br>
+                    &nbsp;&nbsp;transform: translateZ(30px) rotateY(10deg);<br>
+                    }<br>
+                    .gallery-3d:hover .gallery-item:not(:hover) {<br>
+                    &nbsp;&nbsp;transform: scale(0.95) translateZ(-20px);<br>
+                    }
+                </div>
+            </div>
+
+            <div class="effect-card">
+                <h2 class="effect-title">3D Лоадер</h2>
+                <div class="effect-demo">
+                    <div class="loader-3d">
+                        <div class="loader-circle"></div>
+                        <div class="loader-circle"></div>
+                        <div class="loader-circle"></div>
+                    </div>
+                </div>
+                <p class="effect-description">Анимированный 3D лоадер с несколькими вращающимися элементами.</p>
+                <div class="effect-code">
+                    @keyframes loader-rotate {<br>
+                    &nbsp;&nbsp;0% { transform: rotateY(0deg) rotateX(0deg); }<br>
+                    &nbsp;&nbsp;100% { transform: rotateY(360deg) rotateX(360deg); }<br>
+                    }
+                </div>
+            </div>
+
+            <div class="effect-card">
+                <h2 class="effect-title">3D Меню</h2>
+                <div class="effect-demo">
+                    <div class="menu-3d">
+                        <div class="menu-item">Главная</div>
+                        <div class="menu-item">Эффекты</div>
+                        <div class="menu-item">О проекте</div>
+                    </div>
+                </div>
+                <p class="effect-description">Элементы меню с 3D эффектом при наведении.</p>
+                <div class="effect-code">
+                    .menu-item:hover {<br>
+                    &nbsp;&nbsp;transform: translateZ(20px) rotateX(10deg);<br>
+                    &nbsp;&nbsp;background: rgba(0, 255, 255, 0.2);<br>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>Создано с использованием HTML и CSS | Демонстрация возможностей Google Sites</p>
+    </footer>
+</body>
+</html>
